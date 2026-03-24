@@ -21,15 +21,21 @@ def download_photo(url, name):
         url = convert_drive_url(url)
 
         response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+        response.raise_for_status()  # 🔥 catch HTTP errors
+
         img = Image.open(BytesIO(response.content)).convert("RGB")
 
-        path = f"temp/photos/{name}.png"
-        img.save(path)
+        # ================= FIX: RESIZE + COMPRESS =================
+        img.thumbnail((800, 800))  # resize (keeps aspect ratio)
+
+        path = f"temp/photos/{name}.jpg"
+
+        img.save(path, "JPEG", quality=80, optimize=True)
 
         return path
 
     except Exception as e:
         print("PHOTO ERROR:", e)
         return None
-
-        
+    
+    

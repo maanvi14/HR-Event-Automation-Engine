@@ -20,13 +20,15 @@ def upload_to_cloudinary(file_path):
             print("Invalid file path")
             return None
 
-        # Unique filename (important for avoiding overwrite)
+        # Unique filename
         public_id = f"hr_cards/{uuid.uuid4().hex}"
 
         response = cloudinary.uploader.upload(
             file_path,
             public_id=public_id,
-            resource_type="image"
+            resource_type="image",
+            quality="auto",        # 🔥 auto optimize
+            fetch_format="auto"    # 🔥 best format (webp/jpg)
         )
 
         return response.get("secure_url")
