@@ -61,8 +61,8 @@ def generate_card(data, photo_path):
                 "circle_cy_pct": 0.50,
                 "circle_r_pct": 0.24,
                 "name_y_pct": 0.72,
-                "msg_gap": 0.07,
-                "name_color": "#FFD700",   # GOLD (fixed)
+                "msg_gap": 0.09,   # 🔥 spacing improved
+                "name_color": "#FFFFFF",   # 🔥 WHITE NAME
                 "msg_color": "#EAEAEA",
                 "border_color": "white",
                 "uppercase": True
@@ -72,7 +72,7 @@ def generate_card(data, photo_path):
                 "circle_cy_pct": 0.44,
                 "circle_r_pct": 0.18,
                 "name_y_pct": 0.70,
-                "msg_gap": 0.08,
+                "msg_gap": 0.09,
                 "name_color": "#FFD700",
                 "msg_color": "#FFFFFF",
                 "border_color": "#F3E48D",
@@ -84,16 +84,12 @@ def generate_card(data, photo_path):
 
         # ================= TEMPLATE =================
         template_path = os.path.join(BASE_DIR, "templates", cfg["template"])
-
-        if not os.path.exists(template_path):
-            raise Exception(f"Template not found: {template_path}")
-
         template = Image.open(template_path).convert("RGBA")
         draw = ImageDraw.Draw(template)
 
         width, height = template.size
 
-        # ================= HEADER (ONLY ANNIVERSARY) =================
+        # ================= HEADER (ANNIVERSARY ONLY) =================
         if event_type == "anniversary":
             header_font = load_font(int(width * 0.055), bold=True)
 
@@ -102,14 +98,13 @@ def generate_card(data, photo_path):
 
             header_w = draw.textbbox((0, 0), header_text, font=header_font)[2]
 
-            # glow effect
-            for i in range(2):
-                draw.text(
-                    ((width - header_w)//2 - i, int(height * 0.18)),
-                    header_text,
-                    font=header_font,
-                    fill="#AEEBFF"
-                )
+            # soft glow
+            draw.text(
+                ((width - header_w)//2 + 2, int(height * 0.18) + 2),
+                header_text,
+                font=header_font,
+                fill="black"
+            )
 
             draw.text(
                 ((width - header_w)//2, int(height * 0.18)),
@@ -164,17 +159,9 @@ def generate_card(data, photo_path):
 
         ny = int(height * cfg["name_y_pct"])
 
-        # GOLD GLOW (same as anniversary)
-        for offset in range(3):
-            draw.text(
-                ((width - name_w)//2 - offset, ny),
-                name_text,
-                font=name_font,
-                fill="#FFD700"
-            )
-
+        # 🔥 CLEAN SHADOW (not glow)
         draw.text(
-            ((width - name_w)//2 + 3, ny + 3),
+            ((width - name_w)//2 + 2, ny + 2),
             name_text,
             font=name_font,
             fill="black"
@@ -184,11 +171,11 @@ def generate_card(data, photo_path):
             ((width - name_w)//2, ny),
             name_text,
             font=name_font,
-            fill="#FFD700"
+            fill=cfg["name_color"]
         )
 
         # ================= MESSAGE =================
-        msg_font = load_font(int(width * 0.042))
+        msg_font = load_font(int(width * 0.048))  # 🔥 bigger font
 
         if event_type == "anniversary":
             lines = [
@@ -196,8 +183,10 @@ def generate_card(data, photo_path):
                 "wishing you continued success ahead!"
             ]
         else:
-            message = data.get("message")
-            lines = wrap_text(draw, message, msg_font, int(width * 0.75))
+            lines = [
+                "Wishing you a very happy birthday!",
+                "All the best for your upcoming year 🎉"
+            ]
 
         my = ny + int(height * cfg["msg_gap"])
 
@@ -218,7 +207,7 @@ def generate_card(data, photo_path):
                 fill=cfg["msg_color"]
             )
 
-            my += int(height * 0.045)
+            my += int(height * 0.055)  # 🔥 better spacing
 
         # ================= SAVE =================
         filename = f"{data['employee_id']}_{event_type}.png"
@@ -231,5 +220,4 @@ def generate_card(data, photo_path):
     except Exception as e:
         print("CARD GENERATION ERROR:", e)
         return None
-    
     
