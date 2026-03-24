@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from datetime import datetime
+
 from card_generator import generate_card
 from photo_fetcher import download_photo
 from cloudinary_uploader import upload_to_cloudinary
@@ -31,6 +33,17 @@ def generate(employee: Employee):
     try:
         data = employee.dict()
 
+        # ================= STEP 0: CALCULATE YEARS =================
+        years = None
+        if data["event_type"].lower() == "anniversary":
+            today = datetime.today()
+            joining_date = datetime.strptime(data["joining_date"], "%Y-%m-%d")
+
+            years = today.year - joining_date.year
+
+            if (today.month, today.day) < (joining_date.month, joining_date.day):
+                years -= 1
+
         # ================= STEP 1: DOWNLOAD PHOTO =================
         photo_path = download_photo(data["photo_link"], data["employee_id"])
 
@@ -44,7 +57,8 @@ def generate(employee: Employee):
                 "name": data["name"],
                 "department": data["department"],
                 "event_type": data["event_type"],
-                "message": f"Happy {data['event_type']}!"
+                "years": years,   # 🔥 IMPORTANT
+                "message": None   # let generator handle default
             },
             photo_path
         )
@@ -58,7 +72,6 @@ def generate(employee: Employee):
         if not card_url:
             raise HTTPException(status_code=500, detail="Cloud upload failed")
 
-        # ================= RESPONSE =================
         return {
             "status": "success",
             "employee_id": data["employee_id"],

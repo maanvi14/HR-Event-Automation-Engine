@@ -65,9 +65,7 @@ def generate_card(data, photo_path):
                 "name_color": "white",
                 "msg_color": "white",
                 "border_color": "white",
-                "uppercase": True,
-                "header": "Happy Birthday 🎉",
-                "default_msg": "Wishing you a fantastic birthday filled with joy and success!"
+                "uppercase": True
             },
             "anniversary": {
                 "template": "anniversary_template.png",
@@ -78,9 +76,7 @@ def generate_card(data, photo_path):
                 "name_color": "#FFD700",
                 "msg_color": "#FFFFFF",
                 "border_color": "#F3E48D",
-                "uppercase": False,
-                "header": "Happy Work Anniversary 🎉",
-                "default_msg": "Celebrating your dedication and contribution!"
+                "uppercase": False
             }
         }
 
@@ -99,13 +95,20 @@ def generate_card(data, photo_path):
 
         # ================= HEADER =================
         header_font = load_font(int(width * 0.07), bold=True)
-        header_text = cfg["header"]
+
+        if event_type == "anniversary":
+            years = data.get("years", "")
+            header_text = f"Happy {years} Year Work Anniversary!"
+        else:
+            header_text = "Happy Birthday 🎉"
 
         header_w = draw.textbbox((0, 0), header_text, font=header_font)[2]
 
+        # shadow
         draw.text(((width - header_w)//2 + 2, int(height * 0.18) + 2),
                   header_text, font=header_font, fill="black")
 
+        # main text
         draw.text(((width - header_w)//2, int(height * 0.18)),
                   header_text, font=header_font, fill="white")
 
@@ -168,10 +171,16 @@ def generate_card(data, photo_path):
                   name_text, font=name_font, fill=cfg["name_color"])
 
         # ================= MESSAGE =================
-        message = data.get("message") or cfg["default_msg"]
+        msg_font = load_font(int(width * 0.045))
 
-        msg_font = load_font(int(width * 0.05))
-        lines = wrap_text(draw, message, msg_font, int(width * 0.75))
+        if event_type == "anniversary":
+            lines = [
+                "Celebrating your dedication and hard work,",
+                "wishing you continued success ahead!"
+            ]
+        else:
+            message = data.get("message") or "Wishing you a fantastic birthday!"
+            lines = wrap_text(draw, message, msg_font, int(width * 0.75))
 
         my = ny + int(height * cfg["msg_gap"])
 
@@ -197,5 +206,4 @@ def generate_card(data, photo_path):
     except Exception as e:
         print("CARD GENERATION ERROR:", e)
         return None
-    
     
