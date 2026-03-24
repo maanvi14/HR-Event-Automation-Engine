@@ -16,32 +16,8 @@ def load_font(size, bold=False):
 
         return ImageFont.load_default()
 
-    except Exception as e:
-        print("FONT ERROR:", e)
+    except Exception:
         return ImageFont.load_default()
-
-
-# ================= TEXT WRAP =================
-def wrap_text(draw, text, font, max_width):
-    words = text.split()
-    lines = []
-    current = ""
-
-    for w in words:
-        test = (current + " " + w).strip()
-        width = draw.textbbox((0, 0), test, font=font)[2]
-
-        if width <= max_width:
-            current = test
-        else:
-            if current:
-                lines.append(current)
-            current = w
-
-    if current:
-        lines.append(current)
-
-    return lines
 
 
 # ================= MAIN FUNCTION =================
@@ -61,8 +37,8 @@ def generate_card(data, photo_path):
                 "circle_cy_pct": 0.50,
                 "circle_r_pct": 0.24,
                 "name_y_pct": 0.72,
-                "msg_gap": 0.09,   # 🔥 spacing improved
-                "name_color": "#FFFFFF",   # 🔥 WHITE NAME
+                "msg_gap": 0.09,
+                "name_color": "#FFFFFF",
                 "msg_color": "#EAEAEA",
                 "border_color": "white",
                 "uppercase": True
@@ -89,48 +65,33 @@ def generate_card(data, photo_path):
 
         width, height = template.size
 
-        # ================= HEADER (ANNIVERSARY ONLY) =================
+        # ================= ANNIVERSARY HEADER =================
         if event_type == "anniversary":
             header_font = load_font(int(width * 0.055), bold=True)
-
             years = data.get("years", "")
             header_text = f"Happy {years} Year Work Anniversary!"
 
             header_w = draw.textbbox((0, 0), header_text, font=header_font)[2]
 
-            # soft glow
-            draw.text(
-                ((width - header_w)//2 + 2, int(height * 0.18) + 2),
-                header_text,
-                font=header_font,
-                fill="black"
-            )
+            draw.text(((width - header_w)//2 + 2, int(height * 0.18) + 2),
+                      header_text, font=header_font, fill="black")
 
-            draw.text(
-                ((width - header_w)//2, int(height * 0.18)),
-                header_text,
-                font=header_font,
-                fill="white"
-            )
+            draw.text(((width - header_w)//2, int(height * 0.18)),
+                      header_text, font=header_font, fill="white")
 
         # ================= PHOTO =================
         if photo_path and os.path.exists(photo_path):
             photo = Image.open(photo_path).convert("RGBA")
+
+            # 🔥 MEMORY FIX
+            photo = photo.resize((500, 500))
 
             cx = width // 2
             cy = int(height * cfg["circle_cy_pct"])
             r = int(width * cfg["circle_r_pct"])
             size = r * 2
 
-            w_p, h_p = photo.size
-            m = min(w_p, h_p)
-
-            photo = photo.crop((
-                (w_p - m)//2,
-                (h_p - m)//2,
-                (w_p + m)//2,
-                (h_p + m)//2
-            )).resize((size, size), Image.LANCZOS)
+            photo = photo.crop((0, 0, 500, 500)).resize((size, size), Image.LANCZOS)
 
             mask = Image.new("L", (size, size), 0)
             ImageDraw.Draw(mask).ellipse((0, 0, size, size), fill=255)
@@ -143,6 +104,8 @@ def generate_card(data, photo_path):
                     (cx - r - i, cy - r - i, cx + r + i, cy + r + i),
                     outline=cfg["border_color"]
                 )
+
+            photo.close()  # 🔥 MEMORY FIX
 
         # ================= NAME =================
         name_text = data["name"].upper() if cfg["uppercase"] else data["name"].title()
@@ -159,23 +122,14 @@ def generate_card(data, photo_path):
 
         ny = int(height * cfg["name_y_pct"])
 
-        # 🔥 CLEAN SHADOW (not glow)
-        draw.text(
-            ((width - name_w)//2 + 2, ny + 2),
-            name_text,
-            font=name_font,
-            fill="black"
-        )
+        draw.text(((width - name_w)//2 + 2, ny + 2),
+                  name_text, font=name_font, fill="black")
 
-        draw.text(
-            ((width - name_w)//2, ny),
-            name_text,
-            font=name_font,
-            fill=cfg["name_color"]
-        )
+        draw.text(((width - name_w)//2, ny),
+                  name_text, font=name_font, fill=cfg["name_color"])
 
         # ================= MESSAGE =================
-        msg_font = load_font(int(width * 0.048))  # 🔥 bigger font
+        msg_font = load_font(int(width * 0.048))
 
         if event_type == "anniversary":
             lines = [
@@ -193,21 +147,13 @@ def generate_card(data, photo_path):
         for line in lines:
             line_w = draw.textbbox((0, 0), line, font=msg_font)[2]
 
-            draw.text(
-                ((width - line_w)//2 + 1, my + 1),
-                line,
-                font=msg_font,
-                fill="black"
-            )
+            draw.text(((width - line_w)//2 + 1, my + 1),
+                      line, font=msg_font, fill="black")
 
-            draw.text(
-                ((width - line_w)//2, my),
-                line,
-                font=msg_font,
-                fill=cfg["msg_color"]
-            )
+            draw.text(((width - line_w)//2, my),
+                      line, font=msg_font, fill=cfg["msg_color"])
 
-            my += int(height * 0.055)  # 🔥 better spacing
+            my += int(height * 0.055)
 
         # ================= SAVE =================
         filename = f"{data['employee_id']}_{event_type}.png"
@@ -215,9 +161,10 @@ def generate_card(data, photo_path):
 
         template.save(out_path)
 
+        template.close()  # 🔥 MEMORY FIX
+
         return out_path
 
     except Exception as e:
-        print("CARD GENERATION ERROR:", e)
+        print("CARD ERROR:", e)
         return None
-    
