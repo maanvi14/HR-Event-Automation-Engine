@@ -61,9 +61,9 @@ def generate_card(data, photo_path):
                 "circle_cy_pct": 0.50,
                 "circle_r_pct": 0.24,
                 "name_y_pct": 0.72,
-                "msg_gap": 0.08,
-                "name_color": "white",
-                "msg_color": "white",
+                "msg_gap": 0.07,
+                "name_color": "#FFD700",   # GOLD (fixed)
+                "msg_color": "#EAEAEA",
                 "border_color": "white",
                 "uppercase": True
             },
@@ -93,28 +93,24 @@ def generate_card(data, photo_path):
 
         width, height = template.size
 
-        # ================= HEADER =================
-        header_font = load_font(int(width * 0.07), bold=True)
-
-        header_text = None
-
-        # ONLY anniversary gets header
+        # ================= HEADER (ONLY ANNIVERSARY) =================
         if event_type == "anniversary":
+            header_font = load_font(int(width * 0.055), bold=True)
+
             years = data.get("years", "")
             header_text = f"Happy {years} Year Work Anniversary!"
 
-        if header_text:
             header_w = draw.textbbox((0, 0), header_text, font=header_font)[2]
 
-            # shadow
-            draw.text(
-                ((width - header_w)//2 + 2, int(height * 0.18) + 2),
-                header_text,
-                font=header_font,
-                fill="black"
-            )
+            # glow effect
+            for i in range(2):
+                draw.text(
+                    ((width - header_w)//2 - i, int(height * 0.18)),
+                    header_text,
+                    font=header_font,
+                    fill="#AEEBFF"
+                )
 
-            # main text
             draw.text(
                 ((width - header_w)//2, int(height * 0.18)),
                 header_text,
@@ -147,7 +143,6 @@ def generate_card(data, photo_path):
 
             template.paste(photo, (cx - r, cy - r), photo)
 
-            # border glow
             for i in range(3):
                 draw.ellipse(
                     (cx - r - i, cy - r - i, cx + r + i, cy + r + i),
@@ -169,8 +164,8 @@ def generate_card(data, photo_path):
 
         ny = int(height * cfg["name_y_pct"])
 
-        # glow
-        for offset in range(2):
+        # GOLD GLOW (same as anniversary)
+        for offset in range(3):
             draw.text(
                 ((width - name_w)//2 - offset, ny),
                 name_text,
@@ -189,11 +184,11 @@ def generate_card(data, photo_path):
             ((width - name_w)//2, ny),
             name_text,
             font=name_font,
-            fill=cfg["name_color"]
+            fill="#FFD700"
         )
 
         # ================= MESSAGE =================
-        msg_font = load_font(int(width * 0.045))
+        msg_font = load_font(int(width * 0.042))
 
         if event_type == "anniversary":
             lines = [
@@ -223,7 +218,7 @@ def generate_card(data, photo_path):
                 fill=cfg["msg_color"]
             )
 
-            my += int(height * 0.05)
+            my += int(height * 0.045)
 
         # ================= SAVE =================
         filename = f"{data['employee_id']}_{event_type}.png"
