@@ -33,7 +33,7 @@ def generate(employee: Employee):
     try:
         data = employee.dict()
 
-        # ================= STEP 0: CALCULATE YEARS =================
+        # ================= CALCULATE YEARS =================
         years = None
         if data["event_type"].lower() == "anniversary":
             today = datetime.today()
@@ -44,21 +44,27 @@ def generate(employee: Employee):
             if (today.month, today.day) < (joining_date.month, joining_date.day):
                 years -= 1
 
-        # ================= STEP 1: DOWNLOAD PHOTO =================
+        # ================= DOWNLOAD PHOTO =================
         photo_path = download_photo(data["photo_link"], data["employee_id"])
 
         if not photo_path:
             raise HTTPException(status_code=400, detail="Failed to download photo")
 
-        # ================= STEP 2: GENERATE CARD =================
+        # ================= MESSAGE CONTROL =================
+        if data["event_type"].lower() == "birthday":
+            message = "Wishing you a very happy birthday! All the best for your upcoming year 🎉"
+        else:
+            message = None
+
+        # ================= GENERATE CARD =================
         card_path = generate_card(
             {
                 "employee_id": data["employee_id"],
                 "name": data["name"],
                 "department": data["department"],
                 "event_type": data["event_type"],
-                "years": years,   # 🔥 IMPORTANT
-                "message": None   # let generator handle default
+                "years": years,
+                "message": message
             },
             photo_path
         )
@@ -66,7 +72,7 @@ def generate(employee: Employee):
         if not card_path:
             raise HTTPException(status_code=500, detail="Card generation failed")
 
-        # ================= STEP 3: UPLOAD =================
+        # ================= UPLOAD =================
         card_url = upload_to_cloudinary(card_path)
 
         if not card_url:

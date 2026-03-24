@@ -96,21 +96,31 @@ def generate_card(data, photo_path):
         # ================= HEADER =================
         header_font = load_font(int(width * 0.07), bold=True)
 
+        header_text = None
+
+        # ONLY anniversary gets header
         if event_type == "anniversary":
             years = data.get("years", "")
             header_text = f"Happy {years} Year Work Anniversary!"
-        else:
-            header_text = "Happy Birthday 🎉"
 
-        header_w = draw.textbbox((0, 0), header_text, font=header_font)[2]
+        if header_text:
+            header_w = draw.textbbox((0, 0), header_text, font=header_font)[2]
 
-        # shadow
-        draw.text(((width - header_w)//2 + 2, int(height * 0.18) + 2),
-                  header_text, font=header_font, fill="black")
+            # shadow
+            draw.text(
+                ((width - header_w)//2 + 2, int(height * 0.18) + 2),
+                header_text,
+                font=header_font,
+                fill="black"
+            )
 
-        # main text
-        draw.text(((width - header_w)//2, int(height * 0.18)),
-                  header_text, font=header_font, fill="white")
+            # main text
+            draw.text(
+                ((width - header_w)//2, int(height * 0.18)),
+                header_text,
+                font=header_font,
+                fill="white"
+            )
 
         # ================= PHOTO =================
         if photo_path and os.path.exists(photo_path):
@@ -137,7 +147,7 @@ def generate_card(data, photo_path):
 
             template.paste(photo, (cx - r, cy - r), photo)
 
-            # glow border
+            # border glow
             for i in range(3):
                 draw.ellipse(
                     (cx - r - i, cy - r - i, cx + r + i, cy + r + i),
@@ -159,16 +169,28 @@ def generate_card(data, photo_path):
 
         ny = int(height * cfg["name_y_pct"])
 
-        # glow effect
+        # glow
         for offset in range(2):
-            draw.text(((width - name_w)//2 - offset, ny),
-                      name_text, font=name_font, fill="#FFD700")
+            draw.text(
+                ((width - name_w)//2 - offset, ny),
+                name_text,
+                font=name_font,
+                fill="#FFD700"
+            )
 
-        draw.text(((width - name_w)//2 + 3, ny + 3),
-                  name_text, font=name_font, fill="black")
+        draw.text(
+            ((width - name_w)//2 + 3, ny + 3),
+            name_text,
+            font=name_font,
+            fill="black"
+        )
 
-        draw.text(((width - name_w)//2, ny),
-                  name_text, font=name_font, fill=cfg["name_color"])
+        draw.text(
+            ((width - name_w)//2, ny),
+            name_text,
+            font=name_font,
+            fill=cfg["name_color"]
+        )
 
         # ================= MESSAGE =================
         msg_font = load_font(int(width * 0.045))
@@ -179,7 +201,7 @@ def generate_card(data, photo_path):
                 "wishing you continued success ahead!"
             ]
         else:
-            message = data.get("message") or "Wishing you a fantastic birthday!"
+            message = data.get("message")
             lines = wrap_text(draw, message, msg_font, int(width * 0.75))
 
         my = ny + int(height * cfg["msg_gap"])
@@ -187,11 +209,19 @@ def generate_card(data, photo_path):
         for line in lines:
             line_w = draw.textbbox((0, 0), line, font=msg_font)[2]
 
-            draw.text(((width - line_w)//2 + 1, my + 1),
-                      line, font=msg_font, fill="black")
+            draw.text(
+                ((width - line_w)//2 + 1, my + 1),
+                line,
+                font=msg_font,
+                fill="black"
+            )
 
-            draw.text(((width - line_w)//2, my),
-                      line, font=msg_font, fill=cfg["msg_color"])
+            draw.text(
+                ((width - line_w)//2, my),
+                line,
+                font=msg_font,
+                fill=cfg["msg_color"]
+            )
 
             my += int(height * 0.05)
 
@@ -206,4 +236,5 @@ def generate_card(data, photo_path):
     except Exception as e:
         print("CARD GENERATION ERROR:", e)
         return None
+    
     
