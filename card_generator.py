@@ -8,8 +8,13 @@ def load_font(size, bold=False):
         CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
         font_folder = os.path.join(CURRENT_DIR, "fonts")
 
-        font_name = "Georgia-Bold.ttf" if bold else "Georgia.ttf"
+        # ✅ USE PLAYFAIR (your new fonts)
+        font_name = "PlayfairDisplay-Bold.ttf" if bold else "PlayfairDisplay-Regular.ttf"
+
         path = os.path.join(font_folder, font_name)
+
+        print("FONT PATH:", path)
+        print("EXISTS:", os.path.exists(path))
 
         if os.path.exists(path):
             return ImageFont.truetype(path, size)
@@ -19,7 +24,7 @@ def load_font(size, bold=False):
     except Exception as e:
         print("FONT ERROR:", e)
         return ImageFont.load_default()
-
+    
 
 # ================= TEXT WRAP =================
 def wrap_text(draw, text, font, max_width):
