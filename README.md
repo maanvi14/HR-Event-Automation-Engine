@@ -11,6 +11,8 @@
 An automated HR workflow system that generates **personalized employee celebration cards** (birthdays & work anniversaries) and delivers them seamlessly to **Google Chat**.
 
 Built using **n8n + Python microservices**, the system eliminates manual effort for HR/marketing teams and ensures timely, consistent engagement.
+<img width="1389" height="521" alt="image" src="https://github.com/user-attachments/assets/cc6e1356-98f1-446c-a6e6-0b31a8abf8a8" />
+
 
 ---
 
@@ -157,10 +159,10 @@ Google Chat webhook
 Delivered directly to the team communication channel.
 ```
 🔐 Design Principles
-Fully automated (no manual intervention)
-Scalable workflow architecture
-Modular microservice design
-Real-time delivery via webhooks
+1. Fully automated (no manual intervention)
+2. Scalable workflow architecture
+3. Modular microservice design
+4. Real-time delivery via webhooks
 🚀 Future Improvements
 1. Email & Slack Integration
 
