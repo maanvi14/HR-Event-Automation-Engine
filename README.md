@@ -124,19 +124,29 @@ Response:
 }
 ```
 🔹 n8n Workflow
-Trigger: Scheduled / Event-based
-Calls Python microservice
-Sends final message to Google Chat via webhook
-⚙️ Setup Instructions
-1. Clone Repository
+1. Trigger: Scheduled / Event-based
+2. Calls Python microservice
+3. Sends final message to Google Chat via webhook
+
+## ⚙️ Setup Instructions
+### 1️. Clone Repository
+```bash
 git clone https://github.com/your-username/HR-Event-Automation-Engine.git
 cd HR-Event-Automation-Engine
-2. Install Dependencies
+```
+### 2. Install Dependencies
+```bash
 pip install -r requirements.txt
-3. Run Python Service
+```
+### 3. Run Python Service
+```bash
 python main.py
-4. Configure n8n Workflow
+```
+### 4. Configure n8n Workflow
+```bash
 Import workflow JSON
+```
+```bash
 Set:
 Webhook URLs
 Cloudinary credentials
@@ -144,9 +154,8 @@ Google Chat webhook
 💬 Example Output
 🎂 Birthday celebration card with employee name & image
 🎉 Work anniversary card with branding
-
 Delivered directly to the team communication channel.
-
+```
 🔐 Design Principles
 Fully automated (no manual intervention)
 Scalable workflow architecture
