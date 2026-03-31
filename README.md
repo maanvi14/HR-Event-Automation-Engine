@@ -1,4 +1,4 @@
-# 🎉 HR Event Automation Engine
+# HR Event Automation Engine
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![n8n](https://img.shields.io/badge/n8n-Workflow%20Automation-orange)
@@ -35,7 +35,7 @@ This process is:
 
 ---
 
-## ✅ Solution
+##  Solution
 
 This system automates the entire workflow:
 
@@ -122,3 +122,49 @@ Response:
 {
   "card_url": "https://cloudinary.com/generated-card.jpg"
 }
+```
+🔹 n8n Workflow
+Trigger: Scheduled / Event-based
+Calls Python microservice
+Sends final message to Google Chat via webhook
+⚙️ Setup Instructions
+1. Clone Repository
+git clone https://github.com/your-username/HR-Event-Automation-Engine.git
+cd HR-Event-Automation-Engine
+2. Install Dependencies
+pip install -r requirements.txt
+3. Run Python Service
+python main.py
+4. Configure n8n Workflow
+Import workflow JSON
+Set:
+Webhook URLs
+Cloudinary credentials
+Google Chat webhook
+💬 Example Output
+🎂 Birthday celebration card with employee name & image
+🎉 Work anniversary card with branding
+
+Delivered directly to the team communication channel.
+
+🔐 Design Principles
+Fully automated (no manual intervention)
+Scalable workflow architecture
+Modular microservice design
+Real-time delivery via webhooks
+🚀 Future Improvements
+1. Email & Slack Integration
+
+Extend delivery to multiple communication channels
+
+2. Template Customization UI
+
+Allow HR teams to design templates dynamically
+
+3. Database Integration
+
+Store employee data in a structured DB (PostgreSQL)
+
+4. Analytics Dashboard
+
+Track engagement (views, clicks, reactions)
